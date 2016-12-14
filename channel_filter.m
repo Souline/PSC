@@ -15,13 +15,54 @@ Mu0=4.7*pi*10^-7;
 Mur=1;
 %Vacuum permettivity
 Epsilon0=8.84*10^-12;
-%
-
-
+%Insulating permettivity
+EpsilonR=1.5;
 %copper diameter between 0.4 and 0.8 mm 
-d= 0.8;
-
+d= 0.6604;
 %distance beetween the pair (for a no shielded wire)
-D= 2*d;
+D= 3.4036;
+%Wire length
+l=1000; %en m
+%frequency: 255 intervals of  4,3125 kHz (0 to 1.1 MHz) 
+f=(0:4.3125e3:1.104e6); %frequency vector
+%Wire Resistivity: frequency ?
+R(1:256)=sqrt((Mu0*Mur*rho)/(pi))*(sqrt(f(1:256))/d);
+%Wire capacity
+C=(pi*Epsilon0*EpsilonR)/(log(sqrt((D/d)^2-1)+(D/d)));
+%Wire inductivity
+L=((Mu0*Mur)/pi)*(log(sqrt((D/d)^2-1)+(D/d)));
+%Wire conductivity
+G=10^-7;
+%Wire impedance
+Ze=sqrt(L/C);
+%end of line impedance
+Zc=Ze+10;
+%end of line reflection coefficient
+ToR=(Zc-Ze)/(Ze+Zc);
+%beginning of line reflection coefficient
+ToG=(Ze-Zc)/(Ze+Zc);
+%Gamma
+Gamma(1:256)=0;
+egamma(1:256)=0;
+e2gamma(1:256)=0;
+for i=1:256
+    Gamma(i)=sqrt((R(i)+(j*L*2*pi*f(i)))*(G+(j*C*2*pi*f(i))));  
+    egamma(i)=exp(-Gamma(i));
+    e2gamma(i)=exp(-2*Gamma(i));
+end;
+%tension divider bridge
+bridge=Zc/(Ze+Zc);
+%-----------------------------------%
+%Canal modelisation%
+H(1:256)=0;
+for i=1:256
+    H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))))
+end;
+plot(H)
+
+end
+
+
+
 
 
