@@ -1,7 +1,7 @@
 %this function has to calculate filter's coefficient
 
-function [H]= channel_filter()
-%In: no argument
+function [H]= channel_filter(l,desadaptation)
+%In: Wire lenght, desadaptation
 %Out: vector with 256 values
 %wire: UTP (no shielded)
 %copper resistivity
@@ -21,8 +21,6 @@ EpsilonR=1.5;
 d= 0.6604;
 %distance beetween the pair (for a no shielded wire)
 D= 3.4036;
-%Wire length
-l=1000; %en m
 %frequency: 255 intervals of  4,3125 kHz (0 to 1.1 MHz) 
 f=(0:4.3125e3:1.104e6); %frequency vector
 %Wire Resistivity: frequency ?
@@ -32,11 +30,11 @@ C=(pi*Epsilon0*EpsilonR)/(log(sqrt((D/d)^2-1)+(D/d)));
 %Wire inductivity
 L=((Mu0*Mur)/pi)*(log(sqrt((D/d)^2-1)+(D/d)));
 %Wire conductivity
-G=10^-7;
+G=10^-6;
 %Wire impedance
 Ze=sqrt(L/C);
 %end of line impedance
-Zc=Ze+10;
+Zc=Ze+desadaptation;
 %end of line reflection coefficient
 ToR=(Zc-Ze)/(Ze+Zc);
 %beginning of line reflection coefficient
@@ -47,8 +45,8 @@ egamma(1:256)=0;
 e2gamma(1:256)=0;
 for i=1:256
     Gamma(i)=sqrt((R(i)+(j*L*2*pi*f(i)))*(G+(j*C*2*pi*f(i))));  
-    egamma(i)=exp(-Gamma(i));
-    e2gamma(i)=exp(-2*Gamma(i));
+    egamma(i)=exp(-Gamma(i)*l);
+    e2gamma(i)=exp(-2*Gamma(i)*l);
 end;
 %tension divider bridge
 bridge=Zc/(Ze+Zc);
@@ -58,7 +56,14 @@ H(1:256)=0;
 for i=1:256
     H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))))
 end;
-plot(H)
+H = [H(1:256) 0 conj(fliplr(H(2:256))) ];
+
+figure(2)
+subplot(211);
+plot(10*log10(abs(H))) 
+subplot(212);
+plot(ifft(H, 'symmetric')) 
+
 
 end
 
