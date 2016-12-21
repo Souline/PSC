@@ -17,7 +17,7 @@ epsilonR=2;                       % permitivit?? de l'isolant
 
 
 % Longeur de la ligne:
-l=1000;                           %en m
+l=100000;                           %en m
 
 % Fr??quence sous forme de tableau : 
 freq=(0:4.3125e3:1.104e6);        % Vecteur de 256 fr??quences allant de 0hz ?? 1.104Mhz 
@@ -27,19 +27,27 @@ freq=(0:4.3125e3:1.104e6);        % Vecteur de 256 fr??quences allant de 0hz ?? 
 C(1:256) = (pi*epsilon0*epsilonR)/(log(D/d)+sqrt((D/d)^2-1));          % en F/m
 R(1:256) = (sqrt((mu0*muR)/(pi*teta))*sqrt(freq(1:256))/d);            % en ohm/m
 L(1:256) = ((mu0*muR/pi)*log((D/d)+sqrt((D/d)^2-1)));                  % en H/m
-G = 2*10^-6;                                                             % en S/m
+G = 2*10^-6;        % en S/m
 
 gamma(1:256)=0;
 expo(1:256)=0;
 
 for i=1:256
+    Ze=sqrt(L(i)/C(i));
+%end of line impedance
+Zc=Ze;
+%end of line reflection coefficient
+ToR=(Zc-Ze)/(Ze+Zc);
+%beginning of line reflection coefficient
+ToG=(Ze-Zc)/(Ze+Zc);
     gamma(i)=sqrt((R(i)+(j*L(i)*2*pi*freq(i)))*(G+(j*C(i)*2*pi*freq(i))));  
     expo(i)=exp(-gamma(i)*l);
+     expo2(i)=exp(-2*gamma(i)*l);
 end;
 
 %Fonction de transfert du canal :
 HF=0.5*expo;                                % 0.5 : Pont diviseur de tension
-
+HF
 HF = [HF(1:256) 0 conj(fliplr(HF(2:256))) ];
 
 figure(2)
