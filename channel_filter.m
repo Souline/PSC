@@ -54,15 +54,16 @@ bridge=Zc/(Ze+Zc);
 %Canal modelisation%
 H(1:256)=0;
 for i=1:256
-    H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))))
+    H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))));
 end;
-H = [H(1:256) 0 conj(fliplr(H(2:256))) ];
+Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
 
 figure(2)
 subplot(211);
-plot(10*log10(abs(H))) 
+plot(10*log10(abs(Hr))) 
 subplot(212);
-plot(ifft(H, 'symmetric')) 
+plot(ifft(Hr, 'symmetric')) 
+H
 
 
 end
