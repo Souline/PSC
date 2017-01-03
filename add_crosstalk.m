@@ -20,6 +20,7 @@ dspNEXT = linspace(f,1.1e6,256);
 
 %Will be used for ploting
 scale = linspace(f,1.1e6,256);
+scale_time = linspace(0,13e-3, 256);
 
 %Computing of channel equivalent filter's module
 channel = abs(channel_filter(l,0));
@@ -97,18 +98,18 @@ subplot(2,2,2)
 plot(scale,NEXTdB)
 title('dspNEXT')
 subplot(2,2,3)
-plot(FEXT)
+plot(scale_time,FEXT)
 title('effet FExT en temporel')
 subplot(2,2,4)
-plot(NEXT)
+plot(scale_time,NEXT)
 title('effet next en temporel')
 
 figure
 subplot(2,1,1)
-plot(sig)
+plot(scale_time,sig)
 title('Signal initial')
 subplot(2,1,2)
-plot(crossed_signal)
+plot(scale_time,crossed_signal)
 title('signal perturbé')
 end
     

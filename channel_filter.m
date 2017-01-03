@@ -56,36 +56,15 @@ H(1:256)=0;
 for i=1:256
     H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))));
 end;
-<<<<<<< HEAD
 H=bridge*egamma;
-=======
-H=bridge*egamma
->>>>>>> 187af657df69ca618b4ef8cd8e9a1b793cb22cfa
 Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
 
-figure(2)
+figure(3)
 subplot(211);
-<<<<<<< HEAD
 plot(20*log10(abs(Hr))) 
-=======
-plot(10*log10(abs(Hr))) 
->>>>>>> 187af657df69ca618b4ef8cd8e9a1b793cb22cfa
 subplot(212);
 plot(ifft(Hr, 'symmetric')) 
 grid on
-ToR
-ToG
-bridge
-<<<<<<< HEAD
-=======
-
-
-
-end
-
-
->>>>>>> 187af657df69ca618b4ef8cd8e9a1b793cb22cfa
-
 
 
 end
