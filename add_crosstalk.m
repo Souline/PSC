@@ -12,7 +12,7 @@ function [crossed_signal] = add_crosstalk(sig, l, n)
 f=0;
 
 %Out
-crossed_signal = zeros(1,256);
+crossed_signal = zeros(1,512);
 
 %Initialisation of the vectors which will contain FEXT PSD and NEXT PSD
 dspFEXT = linspace(f,1.1e6,256);
@@ -20,13 +20,16 @@ dspNEXT = linspace(f,1.1e6,256);
 
 %Will be used for ploting
 scale = linspace(f,1.1e6,256);
-scale_time = linspace(0,13e-3, 256);
-
+scale_time = linspace(0,13e-3, 512);
+figure(22)
+subplot(2,1,1)
+plot(scale_time,sig)
+title('Signal initial')
 %Computing of channel equivalent filter's module
 channel = abs(channel_filter(l,0));
 
 %Creation of an AWGN signal which will excite FEXT and NEXT PSDs
-noise = awgn(zeros(1,256),1);
+noise = awgn(zeros(1,256),0);
 
 
 %figure
@@ -83,12 +86,14 @@ FEXTdB = 10*log10(dspFEXT/1e-3);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Shifting to time domain
-FEXT = ifft(dspFEXT);
-NEXT = ifft(dspNEXT);
+FEXT = ifft(dspFEXT, 512);
+NEXT = ifft(dspNEXT, 512);
 
-for j=1:256
+for j=1:512
     crossed_signal(j) = sig(j)+FEXT(j)+NEXT(j);
 end
+
+%crossed_signal=abs(sig)+abs(FEXT)+abs(NEXT);
 
 figure
 subplot(2,2,1)
@@ -104,10 +109,7 @@ subplot(2,2,4)
 plot(scale_time,NEXT)
 title('effet next en temporel')
 
-figure
-subplot(2,1,1)
-plot(scale_time,sig)
-title('Signal initial')
+figure(22)
 subplot(2,1,2)
 plot(scale_time,crossed_signal)
 title('signal perturbé')

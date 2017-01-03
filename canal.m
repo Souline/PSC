@@ -8,26 +8,33 @@ function signal_recu=canal(signal_module,l,n,d)
 % h est la réponse impulsionnelle en temps du canal.
 
 h = ifft(channel_filter(l,d));
+%H = channel_filter(l,d);
 
 scale_freq = linspace(0,1.1e6,256);
-scale_time = linspace(0,13e-3, 256);
+scale_time = linspace(0,13e-3, 512);
 
-signal_recu = (0:0:256);
+signal_recu = (0:0:512);
 
 %signal_freq = fft(signal_module, 256);
-%figure(1)
-%plot(scale_freq, signal_freq);
-%title('FFT du signal module');
 
-signal_recu = conv(signal_module, h);
+%figure
+%plot(signal_freq);
 
+signal_recu = conv(signal_module, h)
+%signal_recu = H*signal_freq
+%signal_recu = ifft(signal_recu, 256)
 %for i=1:256
-%    signal_recu(i)=ifft(H(i)*signal_freq(i));
+%    signal_recu(i)=ifft(H(i)*signal_freq(i),256);
 %end
+
+figure(18)
+plot(scale_time, signal_recu);
+
+size(signal_recu)
 
 figure(2)
 subplot(211)
-plot(signal_recu);
+plot(scale_time,signal_recu);
 title('Signal filtré sans le bruit');
 
 %We add noises
