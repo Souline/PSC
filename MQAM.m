@@ -1,5 +1,5 @@
 
-function[signal_Mod] = MQAM(M,signal_binaire)
+function[dataMod] = MQAM(M,signal_binaire)
 
 %M: M_QAM
 k=log2(M) % Nombre de bits par symbole
@@ -16,3 +16,4 @@ dataSymbolsIn=bi2de(dataInMatrix); %On les convertit en décimal
 %<<<<<<<<<Modulation M-QAM>>>>>>>>>>%
 dataMod=qammod(dataSymbolsIn,M,0,'gray'); %Codage de gray avec un offset de phase de 0
 scatterplot(dataMod,1,0,'k*')
+end
