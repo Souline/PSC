@@ -1,4 +1,4 @@
-function RS_encoded = RS_encoding( msg, n, k )
+function rs_encoded = rs_encoding( msg, n, k )
 % RS - reed-solomon encoder
 %
 % this matlab script encodes the message in msg using an [ n, k ]
@@ -23,4 +23,4 @@ function RS_encoded = RS_encoding( msg, n, k )
 enc = comm.RSEncoder( n, k );
 enc.BitInput = true;
 
-RS_encoded = step( enc, msg' );
+rs_encoded = step( enc, msg' );
