@@ -1,8 +1,8 @@
-function [bits_allocation_table, sum_bits, canal_behavior, SNR_table] = allocation_table(prefix_cyclic)
+function [bits_allocation_table, sum_bits, canal_behavior, SNR_table] = allocation_table()
     sums_bit = 0;
     limit = 8*256;
     % catching the SNR values table
-    [SNR_table, canal_behavior] = process_SNR_Unique(prefix_cyclic);
+    [SNR_table, canal_behavior] = process_SNR_Moyennage();
     
     %for each sub-channel, compute the number of bits accroding to Shannon 
     for i=1:256
@@ -24,7 +24,7 @@ function [bits_allocation_table, sum_bits, canal_behavior, SNR_table] = allocati
             bits_allocation_table(i) = 0;
         end
     end
-    plot(bits_allocation_table);
+    
     sum_bits = sum(bits_allocation_table);
     
     % if the sum is a multiple of 8 (need for RS code)
