@@ -59,12 +59,12 @@ end;
 H=bridge*egamma;
 Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
 
-figure(3)
-subplot(211);
-plot(20*log10(abs(Hr))) 
-subplot(212);
-plot(ifft(Hr, 'symmetric')) 
-grid on
+%figure(3)
+%subplot(211);
+%plot(20*log10(abs(Hr))) 
+%subplot(212);
+%plot(ifft(Hr, 'symmetric')) 
+%grid on
 
 
 end

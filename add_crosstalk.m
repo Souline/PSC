@@ -21,10 +21,10 @@ dspNEXT = linspace(f,1.1e6,256);
 %Will be used for ploting
 scale = linspace(f,1.1e6,256);
 scale_time = linspace(0,13e-3, 512);
-figure(22)
-subplot(2,1,1)
-plot(scale_time,sig)
-title('Signal initial')
+%figure(22)
+%subplot(2,1,1)
+%plot(scale_time,sig)
+%title('Signal initial')
 %Computing of channel equivalent filter's module
 channel = abs(channel_filter(l,0));
 
@@ -89,29 +89,29 @@ FEXTdB = 10*log10(dspFEXT/1e-3);
 FEXT = ifft(dspFEXT, 512);
 NEXT = ifft(dspNEXT, 512);
 
-for j=1:512
+for j=1:256
     crossed_signal(j) = sig(j)+FEXT(j)+NEXT(j);
 end
 
 %crossed_signal=abs(sig)+abs(FEXT)+abs(NEXT);
 
-figure
-subplot(2,2,1)
-plot(scale,FEXTdB)
-title('dspFEXT')
-subplot(2,2,2)
-plot(scale,NEXTdB)
-title('dspNEXT')
-subplot(2,2,3)
-plot(scale_time,FEXT)
-title('effet FExT en temporel')
-subplot(2,2,4)
-plot(scale_time,NEXT)
-title('effet next en temporel')
+%figure
+%subplot(2,2,1)
+%plot(scale,FEXTdB)
+%title('dspFEXT')
+%subplot(2,2,2)
+%plot(scale,NEXTdB)
+%title('dspNEXT')
+%subplot(2,2,3)
+%plot(scale_time,FEXT)
+%title('effet FExT en temporel')
+%subplot(2,2,4)
+%plot(scale_time,NEXT)
+%title('effet next en temporel')
 
-figure(22)
-subplot(2,1,2)
-plot(scale_time,crossed_signal)
-title('signal perturbé')
+%figure(22)
+%subplot(2,1,2)
+%plot(scale_time,crossed_signal)
+%title('signal perturbé')
 end
     

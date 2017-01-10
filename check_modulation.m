@@ -2,7 +2,7 @@
 
 M=128;
 k=log2(M);
-s=generateur(k*100000);
+s=generateur(k*10000);
 s_module=MQAM(M,s);
 s_demodule=MQAMDemod(M,s_module);
 figure('Name','Erreur de modulation','NumberTitle','off') 

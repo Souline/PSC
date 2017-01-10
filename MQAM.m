@@ -16,4 +16,5 @@ dataSymbolsIn=bi2de(dataInMatrix); %On les convertit en décimal
 %<<<<<<<<<Modulation M-QAM>>>>>>>>>>%
 dataMod=qammod(dataSymbolsIn,M,0,'gray'); %Codage de gray avec un offset de phase de 0
 scatterplot(dataMod,1,0,'k*')
+
 end
