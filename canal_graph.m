@@ -22,7 +22,7 @@ function varargout = canal_graph(varargin)
 
 % Edit the above text to modify the response to help canal_graph
 
-% Last Modified by GUIDE v2.5 10-Jan-2017 18:15:26
+% Last Modified by GUIDE v2.5 11-Jan-2017 20:45:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -63,7 +63,9 @@ set(handles.slider_desadaptation, 'Value', 1);
 set(handles.slide_line, 'Min', 0);
 set(handles.slide_line, 'Max', 10000);
 set(handles.slide_line, 'Value', 10); 
-
+set(handles.slider_snr, 'Min', 0);
+set(handles.slider_snr, 'Max', 1000);
+set(handles.slider_snr, 'Value', 100); 
 
 % UIWAIT makes canal_graph wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -90,41 +92,47 @@ function slide_line_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 crosstalk= get(handles.Crosstalk,'Value');
 awgn=get(handles.awgn,'Value');
+snr=get(handles.slider_snr,'Value');
 
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
 H= channel_filter(wire,desadaptation);
-Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
-Hfreq= 20*log10(abs(Hr));
-Htemps= ifft(Hr, 'symmetric');
 
-if (crosstalk == 1) && (awgn==0) 
-    Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-    Hfreq_crosstalk=fft(Htemps_crosstalk);
-    Hhermitien=[Hfreq_crosstalk(1:256) 0 conj(fliplr(Hfreq_crosstalk(2:256)))];
-    Htemps=ifft(Hhermitien,'symmetric');
-    Hfreq=20*log10(abs(fft(Htemps)));
-end
+if (crosstalk == 0) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+   
 
-if (crosstalk == 0) && (awgn==1)
-    Htemps= add_awgn_noise(Htemps);
-    Hfreq=20*log10(abs(fft(Htemps)));
-    
-end
+elseif (crosstalk == 1) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,1,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
 
-if (crosstalk == 1) && (awgn==1)
-     Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-     Htemps_awgn_crosstalk= add_awgn_noise(Htemps_crosstalk);
-     Hfreq_crosstalk_awgn=fft(Htemps_awgn_crosstalk);
-     Hhermitien=[Hfreq_crosstalk_awgn(1:256) 0 conj(fliplr(Hfreq_crosstalk_awgn(2:256)))];
-     Htemps=ifft(Hhermitien,'symmetric');
-     Hfreq=20*log10(abs(fft(Htemps)));
+elseif (crosstalk == 0) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,0,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+elseif (crosstalk == 1) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,1,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
 end    
-plot(handles.axes1,Hfreq) ;
-plot(handles.axes2,Htemps) ;
 set(handles.edit1,'String',num2str(wire));
 set(handles.edit2,'String',num2str(desadaptation));
+set(handles.edit3,'String',num2str(snr));
+
 
 
 
@@ -151,41 +159,47 @@ function slider_desadaptation_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 crosstalk= get(handles.Crosstalk,'Value');
 awgn=get(handles.awgn,'Value');
+snr=get(handles.slider_snr,'Value');
 
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
 H= channel_filter(wire,desadaptation);
-Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
-Hfreq= 20*log10(abs(Hr));
-Htemps= ifft(Hr, 'symmetric');
 
-if (crosstalk == 1) && (awgn==0) 
-    Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-    Hfreq_crosstalk=fft(Htemps_crosstalk);
-    Hhermitien=[Hfreq_crosstalk(1:256) 0 conj(fliplr(Hfreq_crosstalk(2:256)))];
-    Htemps=ifft(Hhermitien,'symmetric');
-    Hfreq=20*log10(abs(fft(Htemps)));
-end
+if (crosstalk == 0) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+   
 
-if (crosstalk == 0) && (awgn==1)
-    Htemps= add_awgn_noise(Htemps);
-    Hfreq=20*log10(abs(fft(Htemps)));
-    
-end
+elseif (crosstalk == 1) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,1,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
 
-if (crosstalk == 1) && (awgn==1)
-     Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-     Htemps_awgn_crosstalk= add_awgn_noise(Htemps_crosstalk);
-     Hfreq_crosstalk_awgn=fft(Htemps_awgn_crosstalk);
-     Hhermitien=[Hfreq_crosstalk_awgn(1:256) 0 conj(fliplr(Hfreq_crosstalk_awgn(2:256)))];
-     Htemps=ifft(Hhermitien,'symmetric');
-     Hfreq=20*log10(abs(fft(Htemps)));
+elseif (crosstalk == 0) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,0,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+elseif (crosstalk == 1) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,1,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
 end    
-plot(handles.axes1,Hfreq) ;
-plot(handles.axes2,Htemps) ;
 set(handles.edit1,'String',num2str(wire));
 set(handles.edit2,'String',num2str(desadaptation));
+set(handles.edit3,'String',num2str(snr));
+
 
 % --- Executes during object creation, after setting all properties.
 function slider_desadaptation_CreateFcn(hObject, eventdata, handles)
@@ -256,40 +270,46 @@ function awgn_Callback(hObject, eventdata, handles)
 crosstalk= get(handles.Crosstalk,'Value');
 awgn=get(handles.awgn,'Value');
 
+snr=get(handles.slider_snr,'Value');
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
 H= channel_filter(wire,desadaptation);
-Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
-Hfreq= 20*log10(abs(Hr));
-Htemps= ifft(Hr, 'symmetric');
 
-if (crosstalk == 1) && (awgn==0) 
-    Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-    Hfreq_crosstalk=fft(Htemps_crosstalk);
-    Hhermitien=[Hfreq_crosstalk(1:256) 0 conj(fliplr(Hfreq_crosstalk(2:256)))];
-    Htemps=ifft(Hhermitien,'symmetric');
-    Hfreq=20*log10(abs(fft(Htemps)));
-end
+if (crosstalk == 0) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+   
 
-if (crosstalk == 0) && (awgn==1)
-    Htemps= add_awgn_noise(Htemps);
-    Hfreq=20*log10(abs(fft(Htemps)));
-    
-end
+elseif (crosstalk == 1) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,1,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
 
-if (crosstalk == 1) && (awgn==1)
-     Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-     Htemps_awgn_crosstalk= add_awgn_noise(Htemps_crosstalk);
-     Hfreq_crosstalk_awgn=fft(Htemps_awgn_crosstalk);
-     Hhermitien=[Hfreq_crosstalk_awgn(1:256) 0 conj(fliplr(Hfreq_crosstalk_awgn(2:256)))];
-     Htemps=ifft(Hhermitien,'symmetric');
-     Hfreq=20*log10(abs(fft(Htemps)));
+elseif (crosstalk == 0) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,0,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+elseif (crosstalk == 1) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,1,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
 end    
-plot(handles.axes1,Hfreq) ;
-plot(handles.axes2,Htemps) ;
 set(handles.edit1,'String',num2str(wire));
 set(handles.edit2,'String',num2str(desadaptation));
+set(handles.edit3,'String',num2str(snr));
+
 
 
 % --- Executes on button press in Crosstalk.
@@ -302,43 +322,131 @@ function Crosstalk_Callback(hObject, eventdata, handles)
 
 crosstalk= get(handles.Crosstalk,'Value');
 awgn=get(handles.awgn,'Value');
+snr=get(handles.slider_snr,'Value');
 
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
 H= channel_filter(wire,desadaptation);
-Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
-Hfreq= 20*log10(abs(Hr));
-Htemps= ifft(Hr, 'symmetric');
 
-if (crosstalk == 1) && (awgn==0) 
-    Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-    Hfreq_crosstalk=fft(Htemps_crosstalk);
-    Hhermitien=[Hfreq_crosstalk(1:256) 0 conj(fliplr(Hfreq_crosstalk(2:256)))];
-    Htemps=ifft(Hhermitien,'symmetric');
-    Hfreq=20*log10(abs(fft(Htemps)));
-end
+if (crosstalk == 0) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+   
 
-if (crosstalk == 0) && (awgn==1)
-    Htemps= add_awgn_noise(Htemps);
-    Hfreq=20*log10(abs(fft(Htemps)));
-    
-end
+elseif (crosstalk == 1) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,1,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
 
-if (crosstalk == 1) && (awgn==1)
-     Htemps_crosstalk= add_crosstalk(ifft(H),wire,1);
-     Htemps_awgn_crosstalk= add_awgn_noise(Htemps_crosstalk);
-     Hfreq_crosstalk_awgn=fft(Htemps_awgn_crosstalk);
-     Hhermitien=[Hfreq_crosstalk_awgn(1:256) 0 conj(fliplr(Hfreq_crosstalk_awgn(2:256)))];
-     Htemps=ifft(Hhermitien,'symmetric');
-     Hfreq=20*log10(abs(fft(Htemps)));
+elseif (crosstalk == 0) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,0,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+elseif (crosstalk == 1) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,1,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
 end    
-plot(handles.axes1,Hfreq) ;
-plot(handles.axes2,Htemps) ;
 set(handles.edit1,'String',num2str(wire));
 set(handles.edit2,'String',num2str(desadaptation));
+set(handles.edit3,'String',num2str(snr));
 
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
+
+% --- Executes on slider movement.
+function slider_snr_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_snr (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+crosstalk= get(handles.Crosstalk,'Value');
+awgn=get(handles.awgn,'Value');
+snr=get(handles.slider_snr,'Value');
+
+wire= get(handles.slide_line, 'Value');
+desadaptation= get(handles.slider_desadaptation, 'Value');
+H= channel_filter(wire,desadaptation);
+
+if (crosstalk == 0) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+   
+
+elseif (crosstalk == 1) && (awgn==0) 
+    Hr=pertubations_signal(H,wire,desadaptation,1,0,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+elseif (crosstalk == 0) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,0,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+elseif (crosstalk == 1) && (awgn==1)
+    Hr=pertubations_signal(H,wire,desadaptation,1,1,snr);
+    Hfreq= 20*log10(abs(Hr));
+    Htemps= ifft(Hr, 'symmetric');
+    plot(handles.axes1,Hfreq) ;
+    plot(handles.axes2,Htemps) ;
+
+end    
+set(handles.edit1,'String',num2str(wire));
+set(handles.edit2,'String',num2str(desadaptation));
+set(handles.edit3,'String',num2str(snr));
+
+
+
+
+% --- Executes during object creation, after setting all properties.
+function slider_snr_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to slider_snr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit3 as text
+%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
