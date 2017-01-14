@@ -7,11 +7,12 @@ suite_ini = sign( rand( 1, N ) - p0 * ones( 1, N ) );
 
 %change 0 to 1
 for i = 1:N
-  ifsuite_ini(i) == 0
+  if suite_ini(i) == 0
     suite_ini(i) = 1;
   end
 end
 
 % change -1/1 to 0/1
 suite_bits = 0.5 * ( suite_ini + 1 );
+end
 

@@ -1,56 +1,76 @@
-function [SNR_table,canal_behavior] = process_SNR(prefix_cyclic)
+function [SNR_table,H_estime, power] = process_SNR_Unique(l, n, d, snr)
 
-    table (1:256) = 8;
-    trame_test=randi([0,1],[1,10000]);
-    %modulation
-    trame_init_module =modulationDMT(trame_test,256,table,sum(table),prefix_cyclic);
-     
-    H_in_freq=modelisation_canal();
-    h=ifft(H_in_freq,'symmetric');
-    H_in_freq=H_in_freq(1:256);
-    % convolution symbolisant la transmission dans le canal
-    trame_after_channel=conv(trame_init_module,h,'same');
-
-    freq=(0:4.3125e3:1.104e6);
-    trame_after_channel_infreq=fft(trame_after_channel);
-    trame_after_channel_infreq=trame_after_channel_infreq(1:256)*2;
-    %figure
-    %subplot(3,1,1);
-    %plot(trame_init_module);
-    %subplot(3,1,2);
-    %plot(h(1:50));
-    %subplot(3,1,3);
-    %plot(trame_after_channel);
-    [trame_after_channel_and_noise_infreq,noisePower]=BruitLigne(trame_after_channel_infreq,24.71);
+    table (1:256) = 2; %table d'allocation des bits provisoire
     
+    %Generation du signal pilote
+    trame_test = zeros(1,512);
+    trame_test(1:9) = 1;
+    for i = 10:512
+        trame_test(i) = bitxor(trame_test(i-4), trame_test(i-9));
+    end
     
-    %Je prend la moiti??? des symboles car le vecteur est sym???trique
-   
+    %modulation de la trame test
+    trame_init_module=repartitor(trame_test, table);
+    trame_after_channel = [];
     
-    %figure
-    %title('trame_after_channel_infreq')
-    %plot(freq(1:256),abs(trame_after_channel_infreq))
-    %j'applique la fonction de bruitage du canal
+    %creation des trames totales
+    %Trame module et trame deformee par le canal
+    for i = 1 : 29
+        superframe_init_module = [trame_init_module trame_init_module];
+        trame_after_channel = [trame_after_channel canal(trame_init_module, l, n, d, snr, 1, 1)];
+    end
     
-    %Je calcule le SNR P.SIGNAL - P.BRUIT
-    SNR_table=10*log10((abs(trame_after_channel_and_noise_infreq)).^2) - noisePower(1:256);
-   
-    %FFT de la trame initiale qui est en temps 
-    trame_init_in_freq=fft(trame_init_module(1+prefix_cyclic:512+prefix_cyclic));
-    trame_init_in_freq=trame_init_in_freq(1:256);
-    lolo= 10*log10(abs(trame_init_in_freq).^2);
-    %%%%Calcul du comportement du canal ? travers le signal pilote re?u
-    canal_behavior=trame_init_in_freq./trame_after_channel_and_noise_infreq;
-    figure
+    %Calcul de la table de SNR qui permet de definir la table d'allocation
+    %des bits
+    %La table est constituee de la moyenne des SNR des 30 iterations
+    %d'envoi
+    SNR_table = zeros(1,256);
+    
+    %on passe en frequentiel pour estimer le filtre en frequence
+    trame_after_channel = fft(trame_after_channel);
+        
+    H_estime=zeros(1,256);
+    
+    for i=1:29
+        trame = trame_after_channel((i-1)*544+33:544*i);
+        trame = trame(1:256);
+        H_estime = H_estime + trame./superframe_init_module(33:288);
+    end
+    
+    %H_estime = H_estime./30;
+    h_estime = ifft(H_estime);
+    
+    figure(817)
+    plot(real(h_estime));hold on;plot(imag(h_estime), 'g');
+    title('Réponse impulsionnelle du canal estimée');
+    
+    Noise = zeros(1,256);
+    
+    %estimation du bruit sur chaque sous canal
+    for i=1 : 29
+        trame = trame_after_channel((i-1)*544+33:544*i);
+        trame = trame(1:256);
+        Noise = Noise + abs(trame - H_estime*trame')./abs(superframe_init_module(33:288));
+    end
+    
+    noise_dim = size(Noise);
+    
+    figure(734)
+    plot(real(Noise));
+    title('Bruit estimé');
+    
+    for i=1 : 29
+        trame = trame_after_channel((i-1)*544+33:544*i);
+        trame = trame(1:256);
+        SNR_table = SNR_table + abs(trame)./abs(Noise);
+    end
+    
+    SNR_table = real(SNR_table);
+    figure(38);
     plot(SNR_table)
-    %%%%%%%%%%%%%%%DEMO de H et de 1/H
-     %figure
-     %plot(freq(1:256),abs(H_in_freq));
-     %title('H')
-     %figure
-     %plot(freq(1:256),abs(1./canal_behavior));
-     %title('1/H')
+    title('SNR_table')
     
+end
     
      
     

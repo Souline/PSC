@@ -1,6 +1,6 @@
 %this function has to calculate filter's coefficient
 
-function [H]= channel_filter(l,desadaptation)
+function [Hr]= channel_filter(l,desadaptation)
 %In: Wire lenght, desadaptation
 %Out: vector with 256 values
 %wire: UTP (no shielded)
@@ -57,7 +57,7 @@ for i=1:256
     H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))));
 end;
 H=bridge*egamma;
-Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
+Hr = [H 0 conj(fliplr(H(2:256)))];
 
 figure(3)
 subplot(211);

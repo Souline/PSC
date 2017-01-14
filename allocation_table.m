@@ -1,42 +1,34 @@
-function [bits_allocation_table, sum_bits, canal_behavior, SNR_table] = allocation_table()
+function [bits_allocation_table, SNR_table, data_size_min, H_estime] = allocation_table(l, n, d, snr)
+    
+    %Cette fonction renvoi la table d'allocation des bits (en nombre de
+    %bits par QAM)
     sums_bit = 0;
     limit = 8*256;
+    
     % catching the SNR values table
-    [SNR_table, canal_behavior] = process_SNR_Moyennage();
+    [SNR_table, H_estime] = process_SNR_Unique(l, n, d, snr);
     
-    %for each sub-channel, compute the number of bits accroding to Shannon 
+    %for each sub-channel, compute the number of bits accroding to Shannon
+    bits_allocation_table=zeros(1,256);
+    
+    up_SNR = max(SNR_table);
+    down_SNR = min(SNR_table);
+    
+    distribution = linspace(down_SNR, up_SNR, 16);
+    
     for i=1:256
-        SNR_watt(i) = power(10,SNR_table(i)/10);
-        bits_number = floor(log2(1+SNR_watt(i)));
-        % We don't want to go over 8 bits of average
-        if sums_bit+bits_number < limit
-            % We limit it to 15 (Check doc)
-            if   bits_number > 15
-              bits_allocation_table(i) = 15;
-              sums_bit = sums_bit + 15;
-            elseif bits_number < 0
-              bits_allocation_table(i) = 0;             
-            else 
-              bits_allocation_table(i) = bits_number;
-              sums_bit = sums_bit + bits_number;
-            end
-        else
-            bits_allocation_table(i) = 0;
+        j=1;
+        while SNR_table(i) > distribution(j)
+            j = j + 1;
         end
+        bits_allocation_table(i) = j - 1;
     end
     
-    sum_bits = sum(bits_allocation_table);
+    figure(254);
+    plot(bits_allocation_table);
+    title('Table d allocation des bits');
     
-    % if the sum is a multiple of 8 (need for RS code)
-    % we decrement 1 to the last non null sub channel 
-    j=256;
-    while mod(sum_bits/2,8) ~= 0
-        if (bits_allocation_table(j)) ~= 0 
-            bits_allocation_table(j) = bits_allocation_table(j)-1;
-            sum_bits = sum_bits - 1;
-        end
-        j = j - 1;
-    end
+    sum_bits = sum(bits_allocation_table)
+    data_size_min = computing_size_data(sum_bits);
     
-
 end
