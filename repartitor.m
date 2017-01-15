@@ -7,13 +7,15 @@ iteration = size_input/ofdm_symbol_length %we assume that size_input is a multip
 compteur_bits = 1;
 superframe = [];
 
-Power = 100;
+%Power = 100;
 
-for i = 1 : iteration
-    for j=1:256
+for k = 1 : iteration  % Using i in MATLAB will cause unexpected result becuase i is also regarded as imaginary part!!!
+    sous_trame = data_input( (k-1)*ofdm_symbol_length+1:k*ofdm_symbol_length );
+    compteur_bits = 1;
+    for j=1:256 
         nb_bits = allocation_table(j);
         if nb_bits ~= 0
-            ofdm_symbol(j) = MQAM(2^nb_bits, data_input(compteur_bits:(compteur_bits+nb_bits-1)));
+            ofdm_symbol(j) = MQAM(2^nb_bits, sous_trame(compteur_bits:(compteur_bits+nb_bits-1)));
             compteur_bits = compteur_bits+nb_bits;
         else
             continue;
@@ -21,11 +23,11 @@ for i = 1 : iteration
     end
     %ending of modulation with ifft%
     
-    frame = [ 0 ofdm_symbol(1:256) 0 fliplr(conj(ofdm_symbol(1:256)))];
+    frame = [ofdm_symbol(1:256) fliplr(conj(ofdm_symbol(1:256)))];
     frame = ifft(frame);
     %figure(534)
     %plot(real(frame));hold on;plot(imag(frame), 'g');
-    frame = Power*frame;
+    %frame = Power*frame;
     %figure(112)
     %plot(real(frame));hold on;plot(imag(frame), 'g');
     
