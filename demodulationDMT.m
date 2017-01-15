@@ -8,7 +8,7 @@ function [ supertrame_bin, x ] = demodulationDMT( signal_recu, h_eval_mod, tab )
 %
 % outputs : suite_bits et x
 %
-signal_recu = signal_recu/100;
+%signal_recu = signal_recu/100;
 figure(70)
 plot(real(signal_recu));hold on;plot(imag(signal_recu), 'g');
 title('Entrée démodulateur');
