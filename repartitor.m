@@ -10,6 +10,8 @@ superframe = [];
 %Power = 100;
 
 for k = 1 : iteration  % Using i in MATLAB will cause unexpected result becuase i is also regarded as imaginary part!!!
+    % I changed the orginal loop because the original loop will process data_input which is a high dimensional vector for
+    % iteration * 256 times, the new version will just process sous_trame in the inner loop
     sous_trame = data_input( (k-1)*ofdm_symbol_length+1:k*ofdm_symbol_length );
     compteur_bits = 1;
     for j=1:256 
