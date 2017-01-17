@@ -2,8 +2,8 @@ function rs_encoded = rs_encoding( msg, n, k )
 % RS - reed-solomon encoder
 %
 % this matlab script encodes the message in msg using an [ n, k ]
-% reed-solomon code with the narrow-sense generator polynomial
-
+% reed-solomon code with the narrow-sense polynomial generator
+%
 % input :
 % - msg, the data to reed-solomon encode ( vector of bits )
 %
@@ -12,7 +12,7 @@ function rs_encoded = rs_encoding( msg, n, k )
 % output :
 % - rs_encoded, reed-solomon encoded data ( vector of bits )
 %
-% note that output length is length( msg ) * k
+% note that output length is length( msg ) * n / k
 %
 % examples :
 %
