@@ -1,7 +1,7 @@
 
 % realize CRC coding
-% trame£ºthe bits flux waiting for coding
-% generateur£ºgenerateur of CRC
+% trame: the bits flux waiting for coding
+% generateur: generateur of CRC
 
 function trame_code = codage_crc( trame, generateur )
 
