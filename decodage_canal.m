@@ -1,7 +1,7 @@
-function [ suite_bits_decodee, err ] = decodage_canal( trame, generateur_crc )
+function [ suite_bits_decodee, err ] = decodage_canal( trame, generateur_crc, type_buffer )
 % realise the decoding of the channel
 %
-% the bit string will be decoded first RS and than CRC
+% the bit string will be decoded first interleaving and than RS and than CRC
 
 % inputs :
 % - suite_bits refers to a bit string
@@ -9,6 +9,10 @@ function [ suite_bits_decodee, err ] = decodage_canal( trame, generateur_crc )
 %
 % output : the decoded bit string
 %
+%interleaving
+if type_buffer == 1
+    trame = deinterleaver( trame, 3, 2 );
+end
 
 taille_trame = length( trame );
 
@@ -34,4 +38,3 @@ end
 [ trame_decode, err ] = decodage_crc( trame_rs, generateur_crc );
 
 suite_bits_decodee=trame_decode;
-
