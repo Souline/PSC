@@ -3,10 +3,7 @@ function rs_encoded = rs_encoding( msg, n, k )
 %
 % this matlab script encodes the message in msg using an [ n, k ]
 % reed-solomon code with the narrow-sense generator polynomial
-%
-% input is binary data flow
-% output is rs-encoded decimal numbers
-%
+
 % input :
 % - msg, the data to reed-solomon encode ( vector of bits )
 %
