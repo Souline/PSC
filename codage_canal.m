@@ -1,11 +1,12 @@
 % channel coding for generated bits and decides if we need interleaving according to the type_buffer
+% First is the CRC coding and than RS coding than interleaving
 % inputs:
-%  suite_bits£ºincoming bit string(fast channel interleaving channel)
-% generateur_crc£ºCRC generator
-% type_buffer£ºindicates the type of channel
+% suite_bits: incoming bit string(fast channel and interleaving channel)
+% generateur_cr: CRC generator
+% type_buffer: indicates the type of channel
 
-% output£º
-% suite_bits_codee£ºbit string after coding
+% output:
+% suite_bits_codee: bit string after coding
 
 function suite_bits_codee = codage_canal( suite_bits, generateur_crc, type_buffer )
 
