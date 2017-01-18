@@ -25,7 +25,8 @@ for k = 1 : iteration
         end
     end
     %ending of modulation with ifft%
-    frame = [ 0 ofdm_symbol(2:256) 0 fliplr(conj(ofdm_symbol(2:256)))];
+    
+    frame = [ofdm_symbol(1:256) fliplr(conj(ofdm_symbol(1:256)))];
     frame = ifft(frame);
     
     %adding cyclic prefix

@@ -15,7 +15,6 @@ x_freq = [];
 h_inverse = 1./h_eval_mod;
 h_inverse_time = ifft([ 0 h_inverse(34:288) 0 conj(fliplr(34:288))]);%[0 h_inverse(2:288) 0 h_inverse(2:288)]);
 
-
 for k=1:iteration
     n = 1;
     
@@ -29,14 +28,12 @@ for k=1:iteration
     x_egal = x_egal(33:544) ;
     
     % Switching to frequency domain
-
     x_fft = fft( x_egal );
     x = x_egal(1:256);
     
     x_fin=[x_fin x_fft];%Equalized signal
     
     %QAM demodulation
-
     suite_bits = [];
     for j = 1:256
         nb_bits = tab(j);
@@ -61,7 +58,7 @@ end
 
 figure(60)
 plot(real(x_fin));hold on; plot(imag(x_fin), 'g');
-title('Signal égalisé');
+title('Signal égalisé')
 
 
 end
