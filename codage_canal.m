@@ -26,9 +26,9 @@ trame_rs = [];
 
 
 if N_rs > 0
-  for i = 1:N_rs
+  for k = 1:N_rs
      % coding every 8*224 bits(a RS word)
-    encoded_trame = rs_encoding( trame_crc((i-1)*8*224+1:i*8*224), 240, 224 );
+    encoded_trame = rs_encoding( trame_crc((k-1)*8*224+1:k*8*224), 240, 224 );
     % add the bits which has been RS coded to the end of the output
     trame_rs = [ trame_rs encoded_trame' ];
   end

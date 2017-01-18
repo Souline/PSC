@@ -1,14 +1,17 @@
-function [bits_allocation_table, SNR_table, data_size_min, H_estime] = allocation_table(l, n, d, snr)
+%This function aims to initialize ADSL modem by evaluating the channel
+%In : l, n , d, snr parameters of the channel. Please see in main.m what do
+%each value correspond to
+%Out : bits_allocation_table wich contains the number of bits to send on
+%each sub-channel, data_size_min is the size of a superframe without the
+%encoding bits, H_estime is the estimation of channel's frequency response
+
+function [bits_allocation_table, data_size_min, H_estime] = allocation_table(l, n, d, snr)
     
-    %Cette fonction renvoi la table d'allocation des bits (en nombre de
-    %bits par QAM)
-    sums_bit = 0;
-    limit = 8*256;
-    
-    % catching the SNR values table
+    % catching the SNR values table and the estimation of the channel
     [SNR_table, H_estime] = process_SNR_Unique(l, n, d, snr);
     
-    %for each sub-channel, compute the number of bits accroding to Shannon
+    %for each sub-channel, compute the number of bits associated
+   
     bits_allocation_table=zeros(1,256);
     
     up_SNR = max(SNR_table);
@@ -16,19 +19,21 @@ function [bits_allocation_table, SNR_table, data_size_min, H_estime] = allocatio
     
     distribution = linspace(down_SNR, up_SNR, 16);
     
-    for i=1:256
+    bits_allocation_table(1)=0;
+    for k=2:256
         j=1;
-        while SNR_table(i) > distribution(j)
+        while SNR_table(k) > distribution(j)
             j = j + 1;
         end
-        bits_allocation_table(i) = j - 1;
+        bits_allocation_table(k) = j - 1;
     end
     
-    figure(254);
+    figure(10);
     plot(bits_allocation_table);
     title('Table d allocation des bits');
     
-    sum_bits = sum(bits_allocation_table)
+    %Catching the size of a superframe
+    sum_bits = sum(bits_allocation_table);
     data_size_min = computing_size_data(sum_bits);
     
 end

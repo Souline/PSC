@@ -6,9 +6,9 @@ suite_ini = sign( rand( 1, N ) - p0 * ones( 1, N ) );
 % we get -1/0/1
 
 %change 0 to 1
-for i = 1:N
-  if suite_ini(i) == 0
-    suite_ini(i) = 1;
+for k = 1:N
+  if suite_ini(k) == 0
+    suite_ini(k) = 1;
   end
 end
 

@@ -43,28 +43,32 @@ ToG=(Ze-Zc)/(Ze+Zc);
 Gamma(1:256)=0;
 egamma(1:256)=0;
 e2gamma(1:256)=0;
-for i=1:256
-    Gamma(i)=sqrt((R(i)+(1i*L*2*pi*f(i)))*(G+(1i*C*2*pi*f(i))));  
-    egamma(i)=exp(-Gamma(i)*l);
-    e2gamma(i)=exp(-2*Gamma(i)*l);
+for k=1:256
+    Gamma(k)=sqrt((R(k)+(1i*L*2*pi*f(k)))*(G+(1i*C*2*pi*f(k))));  
+    egamma(k)=exp(-Gamma(k)*l);
+    e2gamma(k)=exp(-2*Gamma(k)*l);
 end;
 %tension divider bridge
 bridge=Zc/(Ze+Zc);
 %-----------------------------------%
 %Canal modelisation%
 H(1:256)=0;
-for i=1:256
-    H(i)=bridge*(egamma(i)/(1+(ToR*ToG*e2gamma(i))));
+for k=1:256
+    H(k)=bridge*(egamma(k)/(1+(ToR*ToG*e2gamma(k))));
 end;
 H=bridge*egamma;
-Hr = [H 0 conj(fliplr(H(2:256)))];
+Hr = [0 H(2:256) 0 conj(fliplr(H(2:256)))];
 
 figure(3)
 subplot(211);
 plot(20*log10(abs(Hr))) 
 subplot(212);
-plot(ifft(Hr, 'symmetric')) 
+plot(ifft(Hr)) 
 grid on
+
+figure(587)
+plot(real(Hr));hold on;plot(imag(Hr), 'g');
+title('Fontion de transfert du canal');
 
 
 end

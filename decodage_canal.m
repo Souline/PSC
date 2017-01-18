@@ -26,8 +26,8 @@ trame_rs = [];
 trame=trame';
 
 if N_check > 0
-  for i = 1:N_rs
-    encoded = rs_decoding( trame((i-1)*8*240+1:i*8*240), 240, 224 );
+  for k = 1:N_rs
+    encoded = rs_decoding( trame((k-1)*8*240+1:k*8*240), 240, 224 );
     trame_rs = [ trame_rs encoded' ];
   end
   trame_rs=[trame_rs trame_rs_end];

@@ -1,67 +1,67 @@
-function [ supertrame_bin, x ] = demodulationDMT( signal_recu, h_eval_mod, tab )
-% inputs :
-% - signal_recu : signal reçu après passage dans le canal
-% - h_eval_mod : module de la réponse impulsionnelle du canal, identifiée
-% - nb_canaux : nombre de canaux utilisés
-% - lgre_pref_cyclique : longueur du CP
-% - tab : vecteur table allocation des bits
-%
-% outputs : suite_bits et x
-%
-signal_recu = signal_recu/100;
-figure(70)
-plot(real(signal_recu));hold on;plot(imag(signal_recu), 'g');
-title('Entrée démodulateur');
+%This function equalizes and demodulate a signal passed in parameters
+%In : signal_recu is the signal coming from the channel, h_eval_mod is the
+%estimated channel's frequency response and tab is the allocation table
+%Out : supertrame_bin is the binary flow (i.e.:demodulated signal)
 
-figure(700)
-plot(real(h_eval_mod));hold on;plot(imag(h_eval_mod), 'g');
+function [ supertrame_bin] = demodulationDMT( signal_recu, h_eval_mod, tab )
+
 supertrame_bin = [];
 nb_bit_per_frame = sum(tab);
 iteration = numel(signal_recu)/544;
 x_fin = [];
 x_freq = [];
-%P=50;
 
-%signal_recu = signal_recu/P;
+%Calculation of channel's inversed response in time 
+h_inverse = 1./h_eval_mod;
+h_inverse_time = ifft([ 0 h_inverse(34:288) 0 conj(fliplr(34:288))]);%[0 h_inverse(2:288) 0 h_inverse(2:288)]);
 
-for i=1:iteration
-    %% Suppression du préfixe cyclique
 
-    trame = signal_recu(544*(i-1) + 33:i*544);
+for k=1:iteration
     n = 1;
+    
+    %Frame catching
+    trame = signal_recu(544*(k-1)+1:k*544);
+    
+    %Equalization
+    x_egal = filter(h_inverse_time,1, trame);
+    
+    % Suppression du préfixe cyclique
+    x_egal = x_egal(33:544) ;
+    
+    % Switching to frequency domain
 
-    %% FFT et égalisation du signal
-
-    x_fft = fft( trame );
-    x = x_fft( 1:256 );% suppression des coordonnées conjuguées introduites avant IFFT
-    x_freq = [x_freq x];
-    x = x./h_eval_mod; % égalisation
-    x_fin = [x_fin x];
-
-    %% Reconstruction des symboles et démodulation
+    x_fft = fft( x_egal );
+    x = x_egal(1:256);
+    
+    x_fin=[x_fin x_fft];%Equalized signal
+    
+    %QAM demodulation
 
     suite_bits = [];
     for j = 1:256
         nb_bits = tab(j);
         if nb_bits ~= 0 
-            symb = (MQAMDemod(2^nb_bits, x(n)));
-            suite_bits = [suite_bits symb];
+            symb = MQAMDemod(2^nb_bits, x(n));
+            suite_bits = [suite_bits symb'];
             n = n + 1;
         else
+            % please read repartitor.m, you can find that when a channel is allocated with 0 bit,
+            % the ofdm_symbol vector will have a zero at its corresponding position, therefore 
+            % after you do ifft and fft, there will be an entry in x vector which does not match 
+            % the original information bit. You need to set the pointer'n' + 1 in this situation as well
+            % to make the pointer has a correct position.
+            n = n + 1;
             continue;
         end
+      
     end
+    
     supertrame_bin = [supertrame_bin suite_bits];
-    numel(supertrame_bin);
 end
 
-figure(212)
-subplot(211)
+figure(60)
 plot(real(x_fin));hold on; plot(imag(x_fin), 'g');
-title('signal égalisé');
-subplot(212)
-plot(real(x_freq));hold on;plot(imag(x_freq), 'g');
-title('Signal à la réception en fréquence');
+title('Signal égalisé');
 
 
 end

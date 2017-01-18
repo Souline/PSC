@@ -23,7 +23,7 @@ channel = abs(channel_filter(l,d));
 %Creation of an AWGN signal which will excite FEXT and NEXT PSDs
 noise = fft(awgn(ones(1,256),1, 'measured', 'linear'));
 
-i=1;
+k=1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Computing of NEXT&FEXT PSD%
@@ -39,13 +39,13 @@ while f < 1.1e6
     DSPperturb = 0.1104*(2/2.208e6)*pow2(sinc(pi*f/2.208e6))*Hlpf*Hhpf;
     
     %Caution : Hfext is actually |Hfext(f)|^2
-    Hfext = channel(i)^2*8e-20*(n/49)^0.6*l*f^2*3.28;
+    Hfext = channel(k)^2*8e-20*(n/49)^0.6*l*f^2*3.28;
     
-    dspFEXT(i) = DSPperturb*Hfext;
-    dspNEXT(i) = DSPperturb*0.8536e-14*n^0.6*f^(3/2);
+    dspFEXT(k) = DSPperturb*Hfext;
+    dspNEXT(k) = DSPperturb*0.8536e-14*n^0.6*f^(3/2);
     
     f = f + 4.3125e3;
-    i=i+1;
+    k=k+1;
 end
 
 %Creation of equivalent filter
