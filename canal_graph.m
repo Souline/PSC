@@ -97,7 +97,7 @@ snr=get(handles.slider_snr,'Value');
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
-H= channel_filter(wire,desadaptation);
+H= channel_filter2(wire,desadaptation);
 
 if (crosstalk == 0) && (awgn==0) 
     Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
@@ -164,7 +164,7 @@ snr=get(handles.slider_snr,'Value');
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
-H= channel_filter(wire,desadaptation);
+H= channel_filter2(wire,desadaptation);
 
 if (crosstalk == 0) && (awgn==0) 
     Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
@@ -274,7 +274,7 @@ snr=get(handles.slider_snr,'Value');
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
-H= channel_filter(wire,desadaptation);
+H= channel_filter2(wire,desadaptation);
 
 if (crosstalk == 0) && (awgn==0) 
     Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
@@ -327,7 +327,7 @@ snr=get(handles.slider_snr,'Value');
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
-H= channel_filter(wire,desadaptation);
+H= channel_filter2(wire,desadaptation);
 
 if (crosstalk == 0) && (awgn==0) 
     Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
@@ -378,7 +378,7 @@ snr=get(handles.slider_snr,'Value');
 
 wire= get(handles.slide_line, 'Value');
 desadaptation= get(handles.slider_desadaptation, 'Value');
-H= channel_filter(wire,desadaptation);
+H= channel_filter2(wire,desadaptation);
 
 if (crosstalk == 0) && (awgn==0) 
     Hr=pertubations_signal(H,wire,desadaptation,0,0,snr);
